@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { View, ActivityIndicator } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./src/lib/supabase";
 import AuthScreen from "./src/screens/AuthScreen";
-import DashboardScreen from "./src/screens/DashboardScreen";
+import RootNavigator from "./src/navigation/RootNavigator";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +37,11 @@ function AppContent() {
     );
   }
 
-  return session ? <DashboardScreen /> : <AuthScreen />;
+  return (
+    <NavigationContainer>
+      {session ? <RootNavigator /> : <AuthScreen />}
+    </NavigationContainer>
+  );
 }
 
 export default function App() {

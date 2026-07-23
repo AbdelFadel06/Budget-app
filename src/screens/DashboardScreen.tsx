@@ -6,19 +6,19 @@ import {
   StyleSheet,
   Pressable,
   Modal,
+  ScrollView,
 } from "react-native";
 import { useBudgetStore } from "../store/useBudgetStore";
 import { useMonthlySummary } from "../hooks/useMonthlySummary";
 import { useEnsureCurrentMonth } from "../hooks/useEnsureCurrentMonth";
 import AddExpenseForm from "../components/AddExpenseForm";
 import AddIncomeForm from "../components/AddIncomeForm";
-import CategoriesScreen from "./CategoriesScreen";
+import CategoryChart from "../components/CategoryChart";
 
 export default function DashboardScreen() {
   const { selectedMonth, selectedYear } = useBudgetStore();
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showAddIncome, setShowAddIncome] = useState(false);
-  const [showCategories, setShowCategories] = useState(false);
 
   const { data: budgetMonth } = useEnsureCurrentMonth(
     selectedMonth,
@@ -52,19 +52,17 @@ export default function DashboardScreen() {
     return (
       <View style={styles.centered}>
         <Text style={styles.emptyText}>
-          Aucun budget trouvé pour {selectedMonth}/{selectedYear}.{"\n"}
-          Crée d'abord une ligne dans budget_months.
+          Aucun budget trouvé pour {selectedMonth}/{selectedYear}.
         </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={() => setShowCategories(true)}>
-        <Text style={styles.categoriesLink}>⚙️ Gérer les catégories</Text>
-      </Pressable>
-
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ padding: 24, paddingBottom: 120 }}
+    >
       <Text style={styles.label}>
         Solde disponible ({selectedMonth}/{selectedYear})
       </Text>
@@ -85,6 +83,8 @@ export default function DashboardScreen() {
         Dépenses planifiées : {data.depenses_planifiees.toLocaleString()} F
       </Text>
 
+      <CategoryChart budgetMonthId={budgetMonth?.id} />
+
       <View style={styles.fabRow}>
         <Pressable
           style={[styles.fab, styles.fabIncome]}
@@ -92,10 +92,7 @@ export default function DashboardScreen() {
         >
           <Text style={styles.fabText}>+ Revenu</Text>
         </Pressable>
-        <Pressable
-          style={styles.fab}
-          onPress={() => setShowAddExpense(true)}
-        >
+        <Pressable style={styles.fab} onPress={() => setShowAddExpense(true)}>
           <Text style={styles.fabText}>+ Dépense</Text>
         </Pressable>
       </View>
@@ -137,18 +134,7 @@ export default function DashboardScreen() {
           )}
         </View>
       </Modal>
-      <Modal visible={showCategories} animationType="slide">
-        <View style={{ flex: 1, paddingTop: 60 }}>
-          <Pressable
-            style={styles.closeButton}
-            onPress={() => setShowCategories(false)}
-          >
-            <Text style={styles.closeButtonText}>✕ Fermer</Text>
-          </Pressable>
-          <CategoriesScreen />
-        </View>
-      </Modal>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -156,8 +142,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 24,
-    justifyContent: "center",
   },
   centered: {
     flex: 1,
@@ -170,12 +154,6 @@ const styles = StyleSheet.create({
     color: "#6b7280",
     fontSize: 18,
     marginBottom: 8,
-  },
-  categoriesLink: {
-    color: "#2563eb",
-    fontWeight: "500",
-    marginBottom: 20,
-    alignSelf: "flex-end",
   },
   balance: {
     fontSize: 36,
