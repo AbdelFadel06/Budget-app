@@ -11,10 +11,14 @@ import { useBudgetStore } from "../store/useBudgetStore";
 import { useMonthlySummary } from "../hooks/useMonthlySummary";
 import { useEnsureCurrentMonth } from "../hooks/useEnsureCurrentMonth";
 import AddExpenseForm from "../components/AddExpenseForm";
+import AddIncomeForm from "../components/AddIncomeForm";
+import CategoriesScreen from "./CategoriesScreen";
 
 export default function DashboardScreen() {
   const { selectedMonth, selectedYear } = useBudgetStore();
   const [showAddExpense, setShowAddExpense] = useState(false);
+  const [showAddIncome, setShowAddIncome] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
 
   const { data: budgetMonth } = useEnsureCurrentMonth(
     selectedMonth,
@@ -57,6 +61,10 @@ export default function DashboardScreen() {
 
   return (
     <View style={styles.container}>
+      <Pressable onPress={() => setShowCategories(true)}>
+        <Text style={styles.categoriesLink}>⚙️ Gérer les catégories</Text>
+      </Pressable>
+
       <Text style={styles.label}>
         Solde disponible ({selectedMonth}/{selectedYear})
       </Text>
@@ -77,12 +85,20 @@ export default function DashboardScreen() {
         Dépenses planifiées : {data.depenses_planifiees.toLocaleString()} F
       </Text>
 
-      <Pressable
-        style={styles.fab}
-        onPress={() => setShowAddExpense(true)}
-      >
-        <Text style={styles.fabText}>+ Dépense</Text>
-      </Pressable>
+      <View style={styles.fabRow}>
+        <Pressable
+          style={[styles.fab, styles.fabIncome]}
+          onPress={() => setShowAddIncome(true)}
+        >
+          <Text style={styles.fabText}>+ Revenu</Text>
+        </Pressable>
+        <Pressable
+          style={styles.fab}
+          onPress={() => setShowAddExpense(true)}
+        >
+          <Text style={styles.fabText}>+ Dépense</Text>
+        </Pressable>
+      </View>
 
       <Modal visible={showAddExpense} animationType="slide">
         <View style={{ flex: 1, paddingTop: 60 }}>
@@ -100,6 +116,36 @@ export default function DashboardScreen() {
               onSuccess={() => setShowAddExpense(false)}
             />
           )}
+        </View>
+      </Modal>
+
+      <Modal visible={showAddIncome} animationType="slide">
+        <View style={{ flex: 1, paddingTop: 60 }}>
+          <Pressable
+            style={styles.closeButton}
+            onPress={() => setShowAddIncome(false)}
+          >
+            <Text style={styles.closeButtonText}>✕ Fermer</Text>
+          </Pressable>
+          {budgetMonth && (
+            <AddIncomeForm
+              budgetMonthId={budgetMonth.id}
+              month={selectedMonth}
+              year={selectedYear}
+              onSuccess={() => setShowAddIncome(false)}
+            />
+          )}
+        </View>
+      </Modal>
+      <Modal visible={showCategories} animationType="slide">
+        <View style={{ flex: 1, paddingTop: 60 }}>
+          <Pressable
+            style={styles.closeButton}
+            onPress={() => setShowCategories(false)}
+          >
+            <Text style={styles.closeButtonText}>✕ Fermer</Text>
+          </Pressable>
+          <CategoriesScreen />
         </View>
       </Modal>
     </View>
@@ -125,6 +171,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 8,
   },
+  categoriesLink: {
+    color: "#2563eb",
+    fontWeight: "500",
+    marginBottom: 20,
+    alignSelf: "flex-end",
+  },
   balance: {
     fontSize: 36,
     fontWeight: "bold",
@@ -143,10 +195,14 @@ const styles = StyleSheet.create({
     color: "#6b7280",
     textAlign: "center",
   },
-  fab: {
+  fabRow: {
     position: "absolute",
     bottom: 40,
     right: 24,
+    flexDirection: "row",
+    gap: 12,
+  },
+  fab: {
     backgroundColor: "#16a34a",
     paddingVertical: 14,
     paddingHorizontal: 20,
@@ -155,6 +211,9 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
+  },
+  fabIncome: {
+    backgroundColor: "#2563eb",
   },
   fabText: {
     color: "#fff",
