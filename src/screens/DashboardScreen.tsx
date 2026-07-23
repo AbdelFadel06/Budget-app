@@ -1,13 +1,25 @@
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { useState } from "react";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  Pressable,
+  Modal,
+} from "react-native";
 import { useBudgetStore } from "../store/useBudgetStore";
 import { useMonthlySummary } from "../hooks/useMonthlySummary";
 import { useEnsureCurrentMonth } from "../hooks/useEnsureCurrentMonth";
+import AddExpenseForm from "../components/AddExpenseForm";
 
 export default function DashboardScreen() {
   const { selectedMonth, selectedYear } = useBudgetStore();
+  const [showAddExpense, setShowAddExpense] = useState(false);
 
-  // S'assure qu'une ligne budget_months existe pour ce mois avant de charger le résumé
-  useEnsureCurrentMonth(selectedMonth, selectedYear);
+  const { data: budgetMonth } = useEnsureCurrentMonth(
+    selectedMonth,
+    selectedYear
+  );
 
   const { data, isLoading, error } = useMonthlySummary(
     selectedMonth,
@@ -64,6 +76,32 @@ export default function DashboardScreen() {
       <Text style={styles.detail}>
         Dépenses planifiées : {data.depenses_planifiees.toLocaleString()} F
       </Text>
+
+      <Pressable
+        style={styles.fab}
+        onPress={() => setShowAddExpense(true)}
+      >
+        <Text style={styles.fabText}>+ Dépense</Text>
+      </Pressable>
+
+      <Modal visible={showAddExpense} animationType="slide">
+        <View style={{ flex: 1, paddingTop: 60 }}>
+          <Pressable
+            style={styles.closeButton}
+            onPress={() => setShowAddExpense(false)}
+          >
+            <Text style={styles.closeButtonText}>✕ Fermer</Text>
+          </Pressable>
+          {budgetMonth && (
+            <AddExpenseForm
+              budgetMonthId={budgetMonth.id}
+              month={selectedMonth}
+              year={selectedYear}
+              onSuccess={() => setShowAddExpense(false)}
+            />
+          )}
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -104,5 +142,32 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "#6b7280",
     textAlign: "center",
+  },
+  fab: {
+    position: "absolute",
+    bottom: 40,
+    right: 24,
+    backgroundColor: "#16a34a",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  fabText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+  },
+  closeButtonText: {
+    color: "#ef4444",
+    fontWeight: "600",
   },
 });
