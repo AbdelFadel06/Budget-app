@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
+import { translateAuthError } from "../utils/authErrors";
 
 type Mode = "signin" | "signup";
 
@@ -37,7 +38,7 @@ export default function AuthScreen() {
       password,
     });
     setLoading(false);
-    if (error) setErrorMsg(error.message);
+    if (error) setErrorMsg(translateAuthError(error.message));
     // Si succès, onAuthStateChange (dans App.tsx) bascule automatiquement l'écran
   }
 
@@ -57,7 +58,7 @@ export default function AuthScreen() {
     setLoading(false);
 
     if (error) {
-      setErrorMsg(error.message);
+      setErrorMsg(translateAuthError(error.message));
       return;
     }
 
@@ -90,6 +91,8 @@ export default function AuthScreen() {
           placeholder="Email"
           autoCapitalize="none"
           keyboardType="email-address"
+          textContentType="username"
+          autoComplete="email"
           value={email}
           onChangeText={setEmail}
         />
@@ -97,6 +100,8 @@ export default function AuthScreen() {
           style={styles.input}
           placeholder="Mot de passe"
           secureTextEntry
+          textContentType={isSignUp ? "newPassword" : "password"}
+          autoComplete={isSignUp ? "new-password" : "password"}
           value={password}
           onChangeText={setPassword}
         />
@@ -105,6 +110,8 @@ export default function AuthScreen() {
             style={styles.input}
             placeholder="Confirmer le mot de passe"
             secureTextEntry
+            textContentType="newPassword"
+            autoComplete="new-password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
           />
