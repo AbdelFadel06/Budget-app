@@ -17,6 +17,8 @@ export function useDeleteCategory() {
     mutationFn: deleteCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["category-breakdown"] });
+      queryClient.invalidateQueries({ queryKey: ["category-spending"] });
     },
   });
 }

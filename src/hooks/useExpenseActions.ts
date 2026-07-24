@@ -24,6 +24,8 @@ export function useMarkExpenseAsDone(month: number, year: number, budgetMonthId?
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monthly-summary", month, year] });
       queryClient.invalidateQueries({ queryKey: ["expenses-list", budgetMonthId] });
+      queryClient.invalidateQueries({ queryKey: ["category-breakdown"] });
+      queryClient.invalidateQueries({ queryKey: ["category-spending"] });
     },
   });
 }
@@ -35,6 +37,8 @@ export function useDeleteExpense(month: number, year: number, budgetMonthId?: st
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monthly-summary", month, year] });
       queryClient.invalidateQueries({ queryKey: ["expenses-list", budgetMonthId] });
+      queryClient.invalidateQueries({ queryKey: ["category-breakdown"] });
+      queryClient.invalidateQueries({ queryKey: ["category-spending"] });
     },
   });
 }

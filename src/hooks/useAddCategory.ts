@@ -6,6 +6,7 @@ interface NewCategoryInput {
   name: string;
   type: CategoryType;
   monthlyBudget: number | null;
+  icon: string | null;
 }
 
 async function addCategory(input: NewCategoryInput) {
@@ -21,6 +22,7 @@ async function addCategory(input: NewCategoryInput) {
       name: input.name,
       type: input.type,
       monthly_budget: input.monthlyBudget,
+      icon: input.icon,
     })
     .select()
     .single();

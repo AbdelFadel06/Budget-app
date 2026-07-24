@@ -8,8 +8,11 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { useBudgetStore } from "../store/useBudgetStore";
 import { useEnsureCurrentMonth } from "../hooks/useEnsureCurrentMonth";
+import { MONTH_NAMES } from "../utils/months";
 import { useExpensesList } from "../hooks/useExpensesList";
 import { useIncomesList } from "../hooks/useIncomesList";
 import {
@@ -64,7 +67,8 @@ export default function TransactionsScreen() {
               style={styles.doneButton}
               onPress={() => markDone(item.id)}
             >
-              <Text style={styles.doneButtonText}>✓ Payée</Text>
+              <Ionicons name="checkmark" size={14} color="#fff" />
+              <Text style={styles.doneButtonText}>Payée</Text>
             </Pressable>
           )}
           <Pressable
@@ -79,7 +83,7 @@ export default function TransactionsScreen() {
               ])
             }
           >
-            <Text style={styles.deleteText}>✕</Text>
+            <Ionicons name="trash-outline" size={18} color="#ef4444" />
           </Pressable>
         </View>
       </View>
@@ -101,16 +105,24 @@ export default function TransactionsScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        Transactions ({selectedMonth}/{selectedYear})
-      </Text>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Transactions</Text>
+        <Text style={styles.headerMonth}>
+          {MONTH_NAMES[selectedMonth - 1]} {selectedYear}
+        </Text>
+      </View>
 
       <View style={styles.tabRow}>
         <Pressable
           style={[styles.tab, tab === "depenses" && styles.tabActive]}
           onPress={() => setTab("depenses")}
         >
+          <Ionicons
+            name="arrow-down-circle-outline"
+            size={16}
+            color={tab === "depenses" ? "#fff" : "#374151"}
+          />
           <Text
             style={[
               styles.tabText,
@@ -124,6 +136,11 @@ export default function TransactionsScreen() {
           style={[styles.tab, tab === "revenus" && styles.tabActive]}
           onPress={() => setTab("revenus")}
         >
+          <Ionicons
+            name="arrow-up-circle-outline"
+            size={16}
+            color={tab === "revenus" ? "#fff" : "#374151"}
+          />
           <Text
             style={[
               styles.tabText,
@@ -160,16 +177,26 @@ export default function TransactionsScreen() {
           }
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff", padding: 20 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 16 },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    marginBottom: 16,
+  },
+  title: { fontSize: 22, fontWeight: "bold" },
+  headerMonth: { fontSize: 14, color: "#9ca3af" },
   tabRow: { flexDirection: "row", marginBottom: 16, gap: 8 },
   tab: {
     flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 6,
     paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: "#f3f4f6",
@@ -191,12 +218,14 @@ const styles = StyleSheet.create({
   rowMeta: { color: "#9ca3af", marginTop: 2 },
   rowActions: { flexDirection: "row", alignItems: "center", gap: 12 },
   doneButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     backgroundColor: "#16a34a",
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 16,
   },
   doneButtonText: { color: "#fff", fontWeight: "600", fontSize: 13 },
-  deleteText: { color: "#ef4444", fontSize: 18, paddingHorizontal: 4 },
   emptyText: { color: "#9ca3af", textAlign: "center", marginTop: 20 },
 });

@@ -18,6 +18,7 @@ export interface Category {
   name: string;
   type: CategoryType;
   monthly_budget: number | null;
+  icon: string | null;
   created_at: string;
 }
 

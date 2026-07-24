@@ -9,7 +9,9 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import dayjs from "dayjs";
 import { useAddIncome } from "../hooks/useAddIncome";
+import DateField from "./DateField";
 
 interface AddIncomeFormProps {
   budgetMonthId: string;
@@ -28,7 +30,7 @@ export default function AddIncomeForm({
 
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
-  const [expectedDate, setExpectedDate] = useState("");
+  const [expectedDate, setExpectedDate] = useState(dayjs().format("YYYY-MM-DD")); // aujourd'hui par défaut
   const [alreadyReceived, setAlreadyReceived] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
 
@@ -69,14 +71,10 @@ export default function AddIncomeForm({
         onChangeText={setAmount}
       />
 
-      <Text style={styles.label}>
-        Date {alreadyReceived ? "de réception" : "attendue"} (AAAA-MM-JJ)
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder="2026-07-25"
-        value={expectedDate}
-        onChangeText={setExpectedDate}
+      <DateField
+        label={`Date ${alreadyReceived ? "de réception" : "attendue"}`}
+        value={expectedDate || null}
+        onChange={setExpectedDate}
       />
 
       <View style={styles.switchRow}>

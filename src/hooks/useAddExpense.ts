@@ -44,10 +44,11 @@ export function useAddExpense(month: number, year: number) {
   return useMutation({
     mutationFn: addExpense,
     onSuccess: () => {
-      // Rafraîchit le solde affiché sur le Dashboard
-      queryClient.invalidateQueries({
-        queryKey: ["monthly-summary", month, year],
-      });
+      // Rafraîchit le solde, la liste des transactions et les totaux par catégorie
+      queryClient.invalidateQueries({ queryKey: ["monthly-summary", month, year] });
+      queryClient.invalidateQueries({ queryKey: ["expenses-list"] });
+      queryClient.invalidateQueries({ queryKey: ["category-breakdown"] });
+      queryClient.invalidateQueries({ queryKey: ["category-spending"] });
     },
   });
 }

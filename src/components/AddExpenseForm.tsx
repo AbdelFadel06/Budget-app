@@ -9,8 +9,10 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import dayjs from "dayjs";
 import { useCategories } from "../hooks/useCategories";
 import { useAddExpense } from "../hooks/useAddExpense";
+import DateField from "./DateField";
 import type { ExpenseStatus } from "../types";
 
 interface AddExpenseFormProps {
@@ -33,7 +35,7 @@ export default function AddExpenseForm({
   const [amount, setAmount] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [status, setStatus] = useState<ExpenseStatus>("planifiee");
-  const [plannedDate, setPlannedDate] = useState(""); // format YYYY-MM-DD
+  const [plannedDate, setPlannedDate] = useState(dayjs().format("YYYY-MM-DD")); // format YYYY-MM-DD, aujourd'hui par défaut
   const [isUnforeseen, setIsUnforeseen] = useState(false);
 
   const canSubmit = label.trim().length > 0 && parseFloat(amount) > 0;
@@ -139,14 +141,10 @@ export default function AddExpenseForm({
         </Pressable>
       </View>
 
-      <Text style={styles.label}>
-        Date {status === "realisee" ? "de paiement" : "prévue"} (AAAA-MM-JJ)
-      </Text>
-      <TextInput
-        style={styles.input}
-        placeholder="2026-07-25"
-        value={plannedDate}
-        onChangeText={setPlannedDate}
+      <DateField
+        label={`Date ${status === "realisee" ? "de paiement" : "prévue"}`}
+        value={plannedDate || null}
+        onChange={setPlannedDate}
       />
 
       <View style={styles.switchRow}>

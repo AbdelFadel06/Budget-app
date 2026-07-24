@@ -40,9 +40,8 @@ export function useAddIncome(month: number, year: number) {
   return useMutation({
     mutationFn: addIncome,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["monthly-summary", month, year],
-      });
+      queryClient.invalidateQueries({ queryKey: ["monthly-summary", month, year] });
+      queryClient.invalidateQueries({ queryKey: ["incomes-list"] });
     },
   });
 }
